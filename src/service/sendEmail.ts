@@ -25,6 +25,7 @@ const transporter = nodemailer.createTransport({
 }
 
 
-export const generateOtp=async()=>{
-    return Math.floor(Math.random()*(99999-10000+1)+10000)
+export const generateOtp = async () => {
+  return Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 }
+

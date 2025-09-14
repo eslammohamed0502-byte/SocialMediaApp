@@ -1,5 +1,5 @@
-import { HydratedDocument, Model, ProjectionType, RootFilterQuery } from "mongoose";
-import { AppError } from "../../utils/classError";
+import { HydratedDocument, Model, ProjectionType, RootFilterQuery, UpdateQuery, UpdateWriteOpResult } from "mongoose";
+
 
 
 
@@ -11,5 +11,7 @@ export abstract class DBRepository<TDocument>{
      async findOne(filter:RootFilterQuery<TDocument>,select?:ProjectionType<TDocument>):Promise<HydratedDocument<TDocument>|null>{
             return await this.model.findOne(filter)
     }
+    async updateOne(filter:RootFilterQuery<TDocument>,update:UpdateQuery<TDocument>):Promise<UpdateWriteOpResult>{
+            return await this.model.updateOne(filter,update)
     }
-
+}
