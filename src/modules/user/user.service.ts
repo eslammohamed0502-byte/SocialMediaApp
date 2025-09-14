@@ -24,23 +24,23 @@ class UserService{
   constructor(){
   }
 
-    SignUp=async(req:Request,res:Response,next:NextFunction)=>{
-        let {userName,email,password,cPassword,age,address,phone,gender}:signUpSchemaType=req.body
-      if (await this._userModel.findOne({email})){
-       throw new AppError("Email already exists",409)
-      }
-   
+  SignUp = async (req: Request, res: Response, next: NextFunction) => {
+    let { userName, email, password, cPassword, age, address, phone, gender }: signUpSchemaType = req.body
+    if (await this._userModel.findOne({ email })) {
+      throw new AppError("Email already exists", 400)
+    }
+    if (password !== cPassword) {
+      throw new AppError("Passwords do not match", 400)
+    }
+    const otp = await generateOtp()
+    const hashOtp = await hashData(String(otp))
+    const hash = await hashData(password)
+    const user = await this._userModel.createOneUser({ userName, email, password: hash, otp: hashOtp, age, address, phone, gender })
+    eventEmitter.emit("ConfirmEmail", { email, otp })
+    const { password: _, ...safeUser } = user.toObject()
 
-    const hash=await hashData(password)
-    const otp= await generateOtp()
-    const hashOtp=await hashData(String(otp))
-
-    const user= await this._userModel.createOneUser({userName,otp:hashOtp,email,password:hash,age,address,phone,gender})
-
-  eventEmitter.emit("Confirm Email",{email,otp})
-
-    return res.status(200).json({message:"successfully signed up",user})
-}
+    return res.status(201).json({ message: "successfully signed up", user: safeUser })
+  }
 
 
   confirmEmail=async(req:Request,res:Response,next:NextFunction)=>{
